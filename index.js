@@ -6,9 +6,6 @@ const errorHandler = require('./middleware/errorHandler');
 // Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
-
 const app = express();
 
 // Body parser
@@ -20,11 +17,20 @@ const employees = require('./routes/employeeRoutes');
 // Mount routers
 app.use('/api/employees', employees);
 
+// Root route
+app.get('/', (req, res) => {
+    res.send('Employee Management API is running...');
+});
+
 // Error handler middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error('Failed to connect to database', err);
 });
